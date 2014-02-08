@@ -8,13 +8,15 @@ import os, sys
 def findPackages(root):
 	packages = []
 	for (dir, dirs, filenames) in os.walk(root):
-		for filename in filenames:
-			if filename == 'top_level.txt':
-				path = os.path.join(dir, filename)
-				with open(path) as f:
-					new = map(lambda L: L.strip(), f.readlines())
-					print('Found {} in {}.'.format(', '.join(new), path))
-					packages += new
+		for filename in filter(lambda x: x == 'top_level.txt', filenames):
+			path = os.path.join(dir, filename)
+			with open(path) as f:
+				for package in f:
+					package = package.strip()
+					for name in (package, package + '.py'):
+						if os.path.exists(os.path.join(root, name)):
+							print('Found {} in {}.'.format(name, path))
+							packages.append(name)
 
 	return packages
 
