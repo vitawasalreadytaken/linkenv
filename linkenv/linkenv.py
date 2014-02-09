@@ -34,6 +34,11 @@ def link(sourceDir, targetDir, name):
 
 
 def main():
+	if len(sys.argv) != 3:
+		print('Usage: {} path/to/site-packages/ path/to/target/dir/'.format(sys.argv[0]))
+		print('\nWill look for packages in your `site-packages\' directory and symlink them to the target directory.')
+		return
+
 	sitePackages = sys.argv[1]
 	target = sys.argv[2]
 
