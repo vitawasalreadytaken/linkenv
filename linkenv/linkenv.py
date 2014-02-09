@@ -54,8 +54,8 @@ def main():
 
 	statement = \
 		'import os, sys\n' + \
-		'sys.path.insert(0, os.path.join(os.path.dirname(__file__), \'{}\'))'.format(target)
-	print('Add the following to your appengine_config.py:\n')
+		'sys.path.insert(0, os.path.join(os.path.dirname(__file__), \'{}\'))'.format(target.strip('/\\'))
+	print('\nAdd the following to your appengine_config.py:\n')
 	print(statement, '\n\n')
 
 
