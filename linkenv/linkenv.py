@@ -42,6 +42,10 @@ def main():
 	sitePackages = sys.argv[1]
 	target = sys.argv[2]
 
+	if not os.path.exists(target):
+		print('Target directory `{}\' does not exist, creating.'.format(target))
+		os.mkdir(target)
+
 	packages = findPackages(sitePackages)
 	print('Linking packages:', ', '.join(packages))
 
@@ -51,7 +55,6 @@ def main():
 	statement = \
 		'import os, sys\n' + \
 		'sys.path.insert(0, os.path.join(os.path.dirname(__file__), \'{}\'))'.format(target)
-
 	print('Add the following to your appengine_config.py:\n')
 	print(statement, '\n\n')
 
