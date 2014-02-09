@@ -24,9 +24,7 @@ def findPackages(root):
 def link(sourceDir, targetDir, name):
 	source = os.path.join(sourceDir, name)
 	target = os.path.join(targetDir, name)
-	if not os.path.exists(source):
-		print('[!] Skipping {} (source does not exist).'.format(target))
-	elif os.path.exists(target):
+	if os.path.exists(target):
 		print('[!] Skipping {} (link already exists).'.format(target))
 	else:
 		relSource = os.path.relpath(source, targetDir)
