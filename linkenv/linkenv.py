@@ -35,7 +35,7 @@ def link(sourceDir, targetDir, name):
 
 
 
-if __name__ == '__main__':
+def main():
 	sitePackages = sys.argv[1]
 	target = sys.argv[2]
 
@@ -51,3 +51,7 @@ if __name__ == '__main__':
 
 	print('Add the following to your appengine_config.py:\n')
 	print(statement, '\n\n')
+
+
+if __name__ == '__main__':
+	main()
