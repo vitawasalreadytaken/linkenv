@@ -21,6 +21,22 @@ def findPackages(root):
 	return packages
 
 
+def dropSubpackages(packages):
+	'''
+	Quick and dirty way to drop subpackages and only link their parent packages/directories.
+	'''
+	copy = set(packages)
+	for package in packages:
+		drop = set()
+		for p in copy:
+			if p.startswith(package) and p != package:
+				print('Dropping subpackage {} in favor of {}.'.format(p, package))
+				drop.add(p)
+		copy.difference_update(drop)
+	return copy
+
+
+
 def link(sourceDir, targetDir, name):
 	source = os.path.join(sourceDir, name)
 	target = os.path.join(targetDir, name)
@@ -50,6 +66,7 @@ def main():
 	target = sys.argv[2]
 
 	packages = findPackages(sitePackages)
+	packages = dropSubpackages(packages)
 	print('Linking packages:', ', '.join(packages))
 
 	for package in packages:
