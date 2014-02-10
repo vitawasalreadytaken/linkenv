@@ -24,9 +24,16 @@ def findPackages(root):
 def link(sourceDir, targetDir, name):
 	source = os.path.join(sourceDir, name)
 	target = os.path.join(targetDir, name)
+	# Redefine targetDir to include any subdir paths that may have been present in target.
+	targetDir = os.path.dirname(target)
+
 	if os.path.exists(target):
 		print('[!] Skipping {} (link already exists).'.format(target))
 	else:
+		if not os.path.exists(targetDir):
+			print('[!] Creating parent directory {}'.format(targetDir))
+			os.makedirs(targetDir)
+
 		relSource = os.path.relpath(source, targetDir)
 		print('{} -> {}'.format(target, relSource))
 		os.symlink(relSource, target)
@@ -41,10 +48,6 @@ def main():
 
 	sitePackages = sys.argv[1]
 	target = sys.argv[2]
-
-	if not os.path.exists(target):
-		print('Target directory `{}\' does not exist, creating.'.format(target))
-		os.mkdir(target)
 
 	packages = findPackages(sitePackages)
 	print('Linking packages:', ', '.join(packages))
