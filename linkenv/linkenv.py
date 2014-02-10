@@ -6,7 +6,7 @@ import os, sys
 
 
 def findPackages(root):
-	packages = []
+	packages = set()
 	for (dir, dirs, filenames) in os.walk(root):
 		for filename in filter(lambda x: x == 'top_level.txt', filenames):
 			path = os.path.join(dir, filename)
@@ -16,7 +16,7 @@ def findPackages(root):
 					for name in (package, package + '.py'):
 						if os.path.exists(os.path.join(root, name)):
 							print('Found {} in {}.'.format(name, path))
-							packages.append(name)
+							packages.add(name)
 
 	return packages
 
