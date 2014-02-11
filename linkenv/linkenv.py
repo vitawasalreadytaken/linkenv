@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import os, sys
+import os, shutil, sys
 
 
 
@@ -37,40 +37,50 @@ def dropSubpackages(packages):
 
 
 
-def link(sourceDir, targetDir, name):
+def link(sourceDir, targetDir, name, copy):
 	source = os.path.join(sourceDir, name)
 	target = os.path.join(targetDir, name)
 	# Redefine targetDir to include any subdir paths that may have been present in target.
 	targetDir = os.path.dirname(target)
 
 	if os.path.exists(target):
-		print('[!] Skipping {} (link already exists).'.format(target))
+		print('[!] Skipping {} (target already exists).'.format(target))
 	else:
 		if not os.path.exists(targetDir):
 			print('[!] Creating parent directory {}'.format(targetDir))
 			os.makedirs(targetDir)
 
-		relSource = os.path.relpath(source, targetDir)
-		print('{} -> {}'.format(target, relSource))
-		os.symlink(relSource, target)
+		if copy:
+			print('{} -> {}'.format(target, source))
+			(shutil.copytree if os.path.isdir(source) else shutil.copyfile)(source, target)
+		else:
+			relSource = os.path.relpath(source, targetDir)
+			print('{} -> {}'.format(target, relSource))
+			os.symlink(relSource, target)
 
 
 
-def main():
-	if len(sys.argv) != 3:
-		print('Usage: {} path/to/site-packages/ path/to/target/dir/'.format(sys.argv[0]))
-		print('\nWill look for packages in your `site-packages\' directory and symlink them to the target directory.')
+def main(argv = sys.argv):
+	if '--copy' in argv:
+		copy = True
+		argv.remove('--copy')
+	else:
+		copy = False
+
+	if len(argv) != 3:
+		print('Usage: {} [--copy] path/to/site-packages/ path/to/target/dir/'.format(argv[0]))
+		print('\nWill look for packages in your `site-packages\' directory and symlink (or copy if the --copy flag is present) them to the target directory.')
 		return
 
-	sitePackages = sys.argv[1]
-	target = sys.argv[2]
+	sitePackages = argv[1]
+	target = argv[2]
 
 	packages = findPackages(sitePackages)
 	packages = dropSubpackages(packages)
-	print('Linking packages:', ', '.join(packages))
+	print('{} packages: {}'.format('Copying' if copy else 'Linking', ', '.join(packages)))
 
 	for package in packages:
-		link(sitePackages, target, package)
+		link(sitePackages, target, package, copy)
 
 	statement = \
 		'import os, sys\n' + \
