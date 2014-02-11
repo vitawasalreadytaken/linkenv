@@ -22,6 +22,11 @@ The first argument indicates where your virtualenv packages are installed. After
 
 After this you will be able to use the virtualenv in your local environment, as well as deploy the packages to production servers.
 
+### Copying the packages instead of symlinking
+Instead of symlinking the packages you can outright copy them. You *need* to do this if you're on Windows as this script only supports symbolic links but not junctions.
+
+	linkenv --copy env/lib/python2.7/site-packages gaenv
+
 
 ## TODO
 
