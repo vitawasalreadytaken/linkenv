@@ -75,6 +75,10 @@ def main(argv = sys.argv):
 	sitePackages = argv[1]
 	target = argv[2]
 
+	if not os.path.exists(sitePackages):
+		print('Error: source directory `{}\' does not exist!'.format(sitePackages))
+		return
+
 	packages = findPackages(sitePackages)
 	packages = dropSubpackages(packages)
 	print('{} packages: {}'.format('Copying' if copy else 'Linking', ', '.join(packages)))
