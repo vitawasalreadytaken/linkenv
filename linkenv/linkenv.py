@@ -29,7 +29,7 @@ def dropSubpackages(packages):
 	for package in packages:
 		drop = set()
 		for p in copy:
-			if p.startswith(package) and p != package:
+			if (p != package) and (p.startswith(package + '/') or p.startswith(package + '\\')):
 				print('Dropping subpackage {} in favor of {}.'.format(p, package))
 				drop.add(p)
 		copy.difference_update(drop)
