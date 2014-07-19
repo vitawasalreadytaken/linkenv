@@ -2,10 +2,11 @@
 
 from __future__ import print_function
 import os, shutil, sys
+from optparse import OptionParser
 
 
 
-def findPackages(root):
+def findPackages(root,ignores):
 	packages = set()
 	for (dir, dirs, filenames) in os.walk(root):
 		for filename in filter(lambda x: x == 'top_level.txt', filenames):
@@ -15,11 +16,24 @@ def findPackages(root):
 					package = package.strip()
 					for name in (package, package + '.py'):
 						if os.path.exists(os.path.join(root, name)):
-							print('Found {} in {}.'.format(name, path))
-							packages.add(name)
+							if name in ignores:
+								print('Ignore {} in {}.'.format(name, path))
+							else:
+								print('Found {} in {}.'.format(name, path))
+								packages.add(name)
 
 	return packages
 
+
+def ignorePackages(file):
+	packages = []
+	if file is None: return packages
+	with open(file) as f:
+		for package in f:
+			packages.append(package.strip().split(' ')[0])
+
+	return packages
+	 
 
 def dropSubpackages(packages):
 	'''
@@ -61,25 +75,36 @@ def link(sourceDir, targetDir, name, copy):
 
 
 def main(argv = sys.argv):
-	if '--copy' in argv:
-		copy = True
-		argv.remove('--copy')
-	else:
-		copy = False
 
-	if len(argv) != 3:
-		print('Usage: {} [--copy] path/to/site-packages/ path/to/target/dir/'.format(argv[0]))
-		print('\nWill look for packages in your `site-packages\' directory and symlink (or copy if the --copy flag is present) them to the target directory.')
+	parser = OptionParser(
+		usage='usage: %prog [options] path/to/site-packages/ path/to/target/dir',
+		description='Will look for packages in your `site-packages\'' +
+								'directory and symlink (or copy if the --copy flag is ' +
+								'present) them to the target directory.'
+	)
+	parser.add_option('-c', '--copy', dest='copy', action='store_true', default=False,
+										help='Copy packages instead of symlinking'
+									 )
+	parser.add_option('-i', '--ignore', dest='ignore', action='store', metavar='FILE',
+										help='FILE that lists packages to ignore'
+									 )
+	(options, args) = parser.parse_args()
+
+	copy = options.copy
+	ignorefile = options.ignore
+
+	if len(args) != 2:
+		parser.error('source and target directories must be specified')
 		return
 
-	sitePackages = argv[1]
-	target = argv[2]
+	sitePackages = args[0]
+	target = args[1]
 
 	if not os.path.exists(sitePackages):
 		print('Error: source directory `{}\' does not exist!'.format(sitePackages))
 		return
 
-	packages = findPackages(sitePackages)
+	packages = findPackages(sitePackages, ignorePackages(ignorefile))
 	packages = dropSubpackages(packages)
 	print('{} packages: {}'.format('Copying' if copy else 'Linking', ', '.join(packages)))
 
