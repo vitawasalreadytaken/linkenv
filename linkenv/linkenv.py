@@ -85,13 +85,13 @@ def main(argv = sys.argv):
 	parser.add_option('-c', '--copy', dest='copy', action='store_true', default=False,
 										help='Copy packages instead of symlinking'
 									 )
-	parser.add_option('-i', '--ignore', dest='ignore', action='store', metavar='FILE',
+	parser.add_option('-i', '--ignore-file', dest='ignorefile', action='store', metavar='FILE',
 										help='FILE that lists packages to ignore'
 									 )
 	(options, args) = parser.parse_args()
 
 	copy = options.copy
-	ignorefile = options.ignore
+	ignorefile = options.ignorefile
 
 	if len(args) != 2:
 		parser.error('source and target directories must be specified')
