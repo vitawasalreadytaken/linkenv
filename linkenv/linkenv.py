@@ -33,7 +33,7 @@ def ignorePackages(file):
 			packages.append(package.strip().split(' ')[0])
 
 	return packages
-	 
+
 
 def dropSubpackages(packages):
 	'''
@@ -70,8 +70,11 @@ def link(sourceDir, targetDir, name, copy):
 		else:
 			relSource = os.path.relpath(source, targetDir)
 			print('{} -> {}'.format(target, relSource))
-			os.symlink(relSource, target)
-
+			# make windows compatible
+			# original: os.symlink(relSource, target)
+			import ctypes
+			kdll = ctypes.windll.LoadLibrary("kernel32.dll")
+			kdll.CreateSymbolicLinkA(relSource, target, 0)
 
 
 def main(argv = sys.argv):
