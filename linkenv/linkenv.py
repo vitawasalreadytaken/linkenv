@@ -50,6 +50,21 @@ def dropSubpackages(packages):
 	return copy
 
 
+## make syymlink work in windows
+# see: http://stackoverflow.com/a/15043806/3830374
+def symlink(source, link_name):
+	import os
+	os_symlink = getattr(os, "symlink", None)
+	if callable(os_symlink):
+		os_symlink(source, link_name)
+	else:
+		import ctypes
+		csl = ctypes.windll.kernel32.CreateSymbolicLinkW
+		csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
+		csl.restype = ctypes.c_ubyte
+		flags = 1 if os.path.isdir(source) else 0
+		if csl(link_name, source, flags) == 0:
+			raise ctypes.WinError()
 
 def link(sourceDir, targetDir, name, copy):
 	source = os.path.join(sourceDir, name)
@@ -70,11 +85,7 @@ def link(sourceDir, targetDir, name, copy):
 		else:
 			relSource = os.path.relpath(source, targetDir)
 			print('{} -> {}'.format(target, relSource))
-			# make windows compatible
-			# original: os.symlink(relSource, target)
-			import ctypes
-			kdll = ctypes.windll.LoadLibrary("kernel32.dll")
-			kdll.CreateSymbolicLinkA(relSource, target, 0)
+			symlink(relSource, target)
 
 
 def main(argv = sys.argv):
