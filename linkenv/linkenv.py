@@ -77,10 +77,12 @@ def link(sourceDir, targetDir, name, copy):
 def main(argv = sys.argv):
 
 	parser = OptionParser(
-		usage='usage: %prog [options] path/to/site-packages/ path/to/target/dir',
-		description='Will look for packages in your `site-packages\'' +
+		usage='usage: %prog [options] [path/to/site-packages/] path/to/target/dir',
+		description='Will look for packages in your `site-packages\' ' +
 								'directory and symlink (or copy if the --copy flag is ' +
-								'present) them to the target directory.'
+								'present) them to the target directory. The ' +
+								'`site-packages\' directory will be auto-discovered ' +
+								'if not provided.'
 	)
 	parser.add_option('-c', '--copy', dest='copy', action='store_true', default=False,
 										help='Copy packages instead of symlinking'
