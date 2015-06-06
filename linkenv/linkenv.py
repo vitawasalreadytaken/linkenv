@@ -93,12 +93,21 @@ def main(argv = sys.argv):
 	copy = options.copy
 	ignorefile = options.ignorefile
 
-	if len(args) != 2:
+	if len(args) == 1:
+		packageDirs = [ p for p in sys.path
+			if p.startswith(os.environ['VIRTUAL_ENV'])
+			and p.endswith('site-packages') ]
+		if len(packageDirs) != 1:
+			parser.error('ambiguous source directories, must specify explicitly')
+			return
+		sitePackages = packageDirs[0]
+	elif len(args) == 2:
+		sitePackages = args[0]
+	else:
 		parser.error('source and target directories must be specified')
 		return
 
-	sitePackages = args[0]
-	target = args[1]
+	target = args[-1]
 
 	if not os.path.exists(sitePackages):
 		print('Error: source directory `{}\' does not exist!'.format(sitePackages))
